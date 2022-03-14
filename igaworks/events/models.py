@@ -5,4 +5,4 @@ class Event(models.Model):
     user_id = models.CharField(max_length=68)
     event = models.CharField(max_length=50, null=False)
     parameters = models.JSONField()
-    event_datetime = models.DateTimeField(null=True)
+    event_datetime = models.DateTimeField()
