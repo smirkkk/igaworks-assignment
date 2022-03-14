@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import EventSerializer
+from .models import Event
 
 
 SQS_URL = os.getenv('SQS_URL')
@@ -40,7 +41,7 @@ def send_sqs_message(messageAttributes: dict) -> str:
                 'StringValue': json.dumps(messageAttributes['parameters'])
             },
             'event_datetime': {
-                'DataType': 'String',
+                'DataType': 'String.datetime',
                 'StringValue': messageAttributes['event_datetime']
             }
         },
@@ -69,4 +70,11 @@ class CollectEventAPI(APIView):
 
 
 class SearchEventAPI(APIView):
-    pass
+    def post(self, request):
+        user_id = request.data.get('user_id', None)
+
+        event_list = Event.objects.filter(user_id=user_id).order_by('-event_datetime')
+
+        serializer = EventSerializer(event_list, many=True)
+
+        return Response(dict(success=True, result=serializer.data))
