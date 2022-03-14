@@ -2,6 +2,7 @@ import os
 from turtle import dot
 
 from dotenv import load_dotenv
+import pymysql
 
 from .base import *
 
@@ -10,15 +11,20 @@ load_dotenv(dotenv_path=os.path.join(BASE_DIR, 'settings/.env.development'), ver
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # WSGI application
 WSGI_APPLICATION = 'config.wsgi.development.application'
 
 
+pymysql.install_as_MySQLdb()
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': '3306'
     }
 }
